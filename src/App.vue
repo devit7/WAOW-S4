@@ -6,6 +6,7 @@
   
   const product = ref([]);
   
+  let id_product = ref("");
   let nama_product = ref("");
   let category_product = ref("");
   let price_product = ref(0);
@@ -49,9 +50,32 @@ function delete_product(id){
   });
 };
 
+function editProduct(){
+  console.log('edit id = '+id_product.value);
+  axios.put(url + '/products/' + id_product.value, {
+    name: nama_product.value,
+    category: category_product.value,
+    price: price_product.value,
+    quantity: quantity_product.value,
+  }).then((response) => {
+    console.log(response.data);
+    get_product();
+  }).catch((error) => {
+    console.log(error);
+  });
+};
+
+function siapkan_form(id,name,category,price,quantity){
+  console.log(id,name,category,price,quantity);
+  id_product.value = id;
+  nama_product.value = name;
+  category_product.value = category;
+  price_product.value = price;
+  quantity_product.value = quantity;
+};
+
 
 /* cari product */
-
 const search_product = ref("");
 
 const filteredProducts = computed(() => {
@@ -139,8 +163,8 @@ get_product();
           />
         </div>
         <div class="flex items-center justify-between w-1/2">
-          <template v-if="product.id == ''">
-            <button v-on:click="simpan_product" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+          <template v-if="id_product === ''">
+            <button type="button" v-on:click="simpan_product" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
               Save Product
             </button>
             <button class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="reset">
@@ -148,11 +172,11 @@ get_product();
             </button>
           </template>
           <template v-else>
-            <button v-on:click="editProduct" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+            <button type="button" v-on:click="editProduct" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
               Edit Product
             </button>
             <button class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button" 
-            v-on:click="product = { id: '', name: '', category: '', price: 0, quantity: 0 }">
+            v-on:click=" id_product= '', nama_product= '', category_product= '', price_product= 0, quantity_product= 0 ">
               Cancel
             </button>
           </template>
@@ -191,7 +215,7 @@ get_product();
             <td class="border px-4 py-2">{{ items.price  }}</td>
             <td class="border px-4 py-2">{{ items.quantity  }}</td>
             <td class="border px-4 py-2">
-              <button v-on:click=""  class="text-sm bg-green-500 hover:bg-green-700 text-white py-1 px-2 rounded focus:outline-none focus:shadow-outline">Edit</button>
+              <button v-on:click="siapkan_form(items.id,items.name,items.category,items.price,items.quantity)"  class="text-sm bg-green-500 hover:bg-green-700 text-white py-1 px-2 rounded focus:outline-none focus:shadow-outline">Edit</button>
               <button v-on:click="delete_product(items.id)" class=" ml-2 text-sm bg-red-500 hover:bg-red-700 text-white py-1 px-2 rounded focus:outline-none focus:shadow-outline">Delete</button>
             </td>
           </tr>
